@@ -1,3 +1,4 @@
+
 #!/bin/bash
 
 apache_sites_available='/etc/apache2/sites-available/'
@@ -15,6 +16,18 @@ if [ $# -eq 0 ]
     exit
 fi
 
+gainroot(){
+	echo -e "\n\nThese operations require root access..."
+	read -t 0.1 -N 255
+	sleep 1
+	ERROR=$( sudo echo -en 2>&1 )
+	  if [ "$ERROR" != "" ]
+	    then
+	      echo -e "\t$ERROR"
+	      exit
+	  fi
+}
+
 create(){
 	echo -e "\nCreating subdomin $subdir$domain"
 	echo -en "\t"
@@ -24,6 +37,8 @@ create(){
 	    echo -e "\nAborting...\n"
 	    exit
 	fi
+
+	gainroot
 
 	echo -e '\nCreating vhosts file...'
 	while read LINE
@@ -68,6 +83,8 @@ remove(){
 	    echo -e "\nAborting...\n"
 	    exit
   	fi
+
+	gainroot
 	
 	echo -e '\nRemoving vhosts file...'
 	ERROR=$( sudo rm $apache_sites_available$subdir$domain 2>&1 >/dev/null )
